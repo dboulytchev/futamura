@@ -170,7 +170,7 @@ b_eq: 	POP2	%eax %ebx
 	cmpl	%eax, %ebx
 	seteb	%dl
 	FIX_BOX %edx
-	PUSH 	edx%edx
+	PUSH 	%edx
 	NEXT_ITER
 
 b_neq: 	POP2	%eax %ebx
