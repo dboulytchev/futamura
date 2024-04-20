@@ -298,20 +298,6 @@ bc_line:
 	WORD %ecx
 	NEXT_ITER
 
-bc_end:
-	ret
-
-bc_sexp:
-	NEXT_ITER
-
-bc_const:
-	WORD %ecx
-	FIX_BOX	%ecx
-	PUSH 	%ecx
-	NEXT_ITER
-
-	NEXT_ITER
-
 bc_fail:
 	pushl	$scanline
 # Runtime call, it terminate all process with 255 code
