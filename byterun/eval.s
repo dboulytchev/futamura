@@ -98,5 +98,60 @@ b_mod:	POP2	%ebx %eax
 	cltd
 	idiv	%ebx
 	PUSH	%edx
+
+
+/* some trivial binops */
+
+bc_drop: 
+	POP %eax
+	ret
+
+bc_dup:  
+	POP 	%eax
+    PUSH	%eax
+	PUSH	%eax
+	ret
+
+bc_const:
+	PUSH %ecx
+	ret 
+
+bc_line:
+	nop
+	ret 
 	
+bc_fail:
+	pushl scanline
+	call failure
+	popl %eax 
+
+bc_stg:
+	PUSH global_data(, %ecx, 4)
+	ret
+
+bc_stl: 
+    PUSH -4(%ebp, %ecx, -4) 
+	ret
+
+bc_sta: 
+    PUSH 8(%ebp, %ecx, 4) 
+	ret
+
+bc_ldg:
+	PUSH global_data(, %ecx, 4)
+	ret
+
+bc_ldl: 
+    PUSH -4(%ebp, %ecx, -4) 
+	ret
+
+bc_lda: 
+    PUSH 8(%ebp, %ecx, 4) 
+	ret
+     	
 binops:	.int b_add,b_sub,b_mul,b_mod
+
+	.data
+scanline: .asciz "something bad happened"	
+
+global_data: .skip 4 * 1000
