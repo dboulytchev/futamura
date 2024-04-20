@@ -213,3 +213,68 @@ b_or:	POP2	%eax %ebx
 	ret
 
 binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
+
+/* some trivial binops */
+
+bc_drop: 
+	POP %eax
+	ret
+
+bc_dup:  
+	POP 	%eax
+	PUSH	%eax
+	PUSH	%eax
+	ret
+
+bc_const:
+	FIX_BOX	%ecx
+	PUSH 	%ecx
+	ret 
+
+bc_line:
+	nop
+	ret 
+	
+bc_fail:
+	pushl	$scanline
+	call	failure
+	popl	%eax 
+	ret
+
+bc_ldg:
+	movl	global_data(, %ecx, 4), %eax
+	PUSH	%eax
+	ret
+
+bc_ldl: 
+	negl	%ecx
+	movl	-4(%ebp, %ecx, 4), %eax
+	PUSH	%eax
+	ret
+
+bc_lda: 
+	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
+	movl	4(%ebp, %ecx, 4), %eax 
+	PUSH	%eax
+	ret
+
+bc_stg:
+	POP		%eax
+	movl	%eax, global_data(, %ecx, 4)
+	ret
+
+bc_stl:
+	negl	%ecx
+	POP		%eax
+	movl	%eax, -4(%ebp, %ecx, 4) 
+	ret
+
+bc_sta:
+	POP		%eax
+	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
+	movl	%eax, 4(%ebp, %ecx, 4)
+	ret
+     	
+	.data
+scanline: .asciz "something bad happened"	
+global_data: .skip 4 * 1000
