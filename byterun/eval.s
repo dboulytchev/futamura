@@ -5,6 +5,7 @@
 	xorl 	$1, \dst
 	.endm
 
+# fixnum arithmetics: unbox integer
 	.macro FIX_UNB dst
 	xorl 	$1, \dst
 	sarl 	$1, \dst
@@ -353,6 +354,19 @@ bc_elem:
 	popl	%ebx
 # }
 	PUSH 	%eax
+	ret
+
+bc_write:
+	POP		%ebx
+	pushl	%ebx
+	call	Lwrite
+	popl	%ebx
+	PUSH	%eax
+	ret
+
+bc_read:
+	call	Lread
+	PUSH	%eax
 	ret
 
 	.data
