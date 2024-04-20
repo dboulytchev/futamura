@@ -5,7 +5,6 @@
 	xorl 	$1, \dst
 	.endm
 
-# fixnum arithmetics: unbox integer
 	.macro FIX_UNB dst
 	xorl 	$1, \dst
 	sarl 	$1, \dst
@@ -77,21 +76,36 @@ eval:
 # %esi now plays a role of stack pointer
 	movl	$stack, %esi
 
+entry:
 	xorl	%eax, %eax
 	BYTE	%al
-
 	movb	%al,%ah
 	andb    $15,%al
 	andb    $240,%ah
 	shrb 	$4,%ah
-
-
+	movsx   %ah,%ebx
+	movl    high(,%ebx,0x4),%ebx
+	call    *%ebx
 
 # Restoring callee's frame pointer
 	popl	%ebp
 
 # Returning
 	ret
+high: .int binop,trivial,0,0,0,0,0,0
+
+binop:
+    movsx   %al,%ebx
+    movl    binops-0x4(,%ebx,0x4),%ebx
+    jmp     *%ebx
+binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
+
+trivial:
+    movsx   %al,%ebx
+    movl    trivials-0x4(,%ebx,0x4),%ebx
+    jmp     *%ebx
+trivials: .int bc_const,0,bc_sexp,bc_sti,bc_sta,bc_jmp,bc_end,bc_ret,bc_drop,bc_dup,0,bc_elem
+
 
 b_add:	POP2 	%eax %ebx
 	FIX_UNB %eax
@@ -212,69 +226,93 @@ b_or:	POP2	%eax %ebx
 	PUSH	%ebx
 	ret
 
-binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
 
 /* some trivial binops */
 
-bc_drop: 
+bc_drop:
 	POP %eax
 	ret
 
-bc_dup:  
+bc_dup:
 	POP 	%eax
 	PUSH	%eax
 	PUSH	%eax
 	ret
 
+bc_sti:
+	ret
+
+bc_jmp:
+	ret
+
+bc_end:
+	ret
+
+bc_ret:
+	ret
+
+bc_elem:
+	ret
+
+bc_sexp:
+	ret
+
 bc_const:
+	WORD %ecx
 	FIX_BOX	%ecx
 	PUSH 	%ecx
-	ret 
+	ret
 
 bc_line:
 	nop
-	ret 
-	
+	ret
+
 bc_fail:
 	pushl	$scanline
 	call	failure
-	popl	%eax 
+	popl	%eax
 	ret
 
 bc_ldg:
+	WORD %ecx
 	movl	global_data(, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_ldl: 
+bc_ldl:
+	WORD %ecx
 	negl	%ecx
 	movl	-4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_lda: 
+bc_lda:
+	WORD %ecx
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
-	movl	4(%ebp, %ecx, 4), %eax 
+	movl	4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
 bc_stg:
+	WORD %ecx
 	POP		%eax
 	movl	%eax, global_data(, %ecx, 4)
 	ret
 
 bc_stl:
+	WORD %ecx
 	negl	%ecx
 	POP		%eax
-	movl	%eax, -4(%ebp, %ecx, 4) 
+	movl	%eax, -4(%ebp, %ecx, 4)
 	ret
 
 bc_sta:
+	WORD %ecx
 	POP		%eax
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
 	movl	%eax, 4(%ebp, %ecx, 4)
 	ret
-     	
+
 	.data
-scanline: .asciz "something bad happened"	
+scanline: .asciz "something bad happened"
 global_data: .skip 4 * 1000
