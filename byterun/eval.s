@@ -168,7 +168,6 @@ b_eq: 	POP2	%eax %ebx
 	FIX_UNB %ebx
 	xorl	%edx, %edx
 	cmpl	%eax, %ebx
-	xorl 	%eax, %eax
 	seteb	%dl
 	FIX_BOX %edx
 	PUSH 	%edx
@@ -178,7 +177,7 @@ b_neq: 	POP2	%eax %ebx
 	FIX_UNB %eax
 	FIX_UNB %ebx
 	xorl	%edx, %edx
-	cmpl	%eax,%ebx
+	cmpl	%eax, %ebx
 	setneb	%dl
 	FIX_BOX %edx
 	PUSH 	%edx
