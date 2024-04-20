@@ -9,6 +9,9 @@
 # Lama bytecode files
 *.bc
 
+# GDB history
+**/.gdb_history
+
 # Prerequisites
 *.d
 

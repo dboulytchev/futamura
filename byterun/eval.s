@@ -98,7 +98,7 @@ high: .int binop,trivial,ld,0,st,cond_jump,0,builtin
 
 binop:
 	SWITCH %al binops
-binops:	.int 0,b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
+binops:	.int 0,b_add,b_sub,b_mul,b_div,b_mod,b_lt,b_le,b_gt,b_ge,b_eq,b_neq,b_and,b_or
 
 trivial:
 	SWITCH %al trivials
