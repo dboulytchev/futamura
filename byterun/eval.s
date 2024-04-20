@@ -3,9 +3,6 @@
 	.macro NEXT_ITER
 	jmp entry_point
 	.endm
-	.macro TERMINATE
-	jmp terminate
-	.endm
 	.macro FIX_BOX dst
 	sall 	$1, \dst
 	xorl 	$1, \dst
