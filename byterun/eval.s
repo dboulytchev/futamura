@@ -76,6 +76,13 @@ eval:
 # %esi now plays a role of stack pointer
 	movl	$stack, %esi
 
+	call entry_point
+# Restoring callee's frame pointer
+	popl	%ebp
+
+# Returning
+	ret
+
 entry_point:
 # Decode next insn
 	xorl	%eax, %eax
@@ -89,12 +96,6 @@ entry_point:
 	movl    high(,%ebx,0x4),%ebx
 	jmp    *%ebx
 
-terminate:
-# Restoring callee's frame pointer
-	popl	%ebp
-
-# Returning
-	ret
 high: .int binop,trivial,ld,0,st,cond_jump,0,0
 
 binop:
@@ -275,9 +276,9 @@ bc_begin:
 	WORD %ecx
 	WORD %ecx
 	NEXT_ITER
+
 bc_end:
-	TERMINATE
-	NEXT_ITER
+	ret
 
 bc_elem:
 	NEXT_ITER
