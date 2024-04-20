@@ -95,4 +95,4 @@ b_mod:	POP2	%ebx %eax
 	idiv	%ebx
 	PUSH	%edx
 	
-	
+w:	.word b_abb, b_sub, b_mul, b_mod
