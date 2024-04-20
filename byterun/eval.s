@@ -255,6 +255,7 @@ bc_sti:
 	POP	%eax
 	POP	%ecx
 	movl %eax, (%ecx)
+	PUSH %eax
 	NEXT_ITER
 
 bc_sta:
