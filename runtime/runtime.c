@@ -1206,8 +1206,6 @@ extern void *Ltl (void *v) { return Belem(v, BOX(1)); }
 extern int Lread () {
   int result = BOX(0);
 
-  printf("> ");
-  fflush(stdout);
   scanf("%d", &result);
 
   return BOX(result);
