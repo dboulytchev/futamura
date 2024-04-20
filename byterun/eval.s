@@ -366,20 +366,20 @@ bc_ld_a:
 
 bc_st_g:
 	WORD %ecx
-	POP		%eax
+	movl 	-4(%esi), %eax
 	movl	%eax, global_data(, %ecx, 4)
 	NEXT_ITER
 
 bc_st_l:
 	WORD %ecx
 	negl	%ecx
-	POP		%eax
+	movl 	-4(%esi), %eax
 	movl	%eax, -4(%ebp, %ecx, 4)
 	NEXT_ITER
 
 bc_st_a:
 	WORD %ecx
-	POP		%eax
+	movl 	-4(%esi), %eax
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
 	movl	%eax, 8(%ebp, %ecx, 4)
 	NEXT_ITER
