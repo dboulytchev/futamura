@@ -245,11 +245,11 @@ bc_stg:
 	ret
 
 bc_stl: 
-    PUSH -4(%ebp, %ecx, -4) 
+	PUSH -4(%ebp, %ecx, -4) 
 	ret
 
 bc_sta: 
-    PUSH 8(%ebp, %ecx, 4) 
+	PUSH 8(%ebp, %ecx, 4) 
 	ret
 
 bc_ldg:
@@ -257,11 +257,11 @@ bc_ldg:
 	ret
 
 bc_ldl: 
-    POP -4(%ebp, %ecx, -4) 
+	POP -4(%ebp, %ecx, -4) 
 	ret
 
 bc_lda: 
-    POP 8(%ebp, %ecx, 4) 
+	POP 8(%ebp, %ecx, 4) 
 	ret
      	
 	.data
