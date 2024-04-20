@@ -277,14 +277,6 @@ bc_sta:
 	add		$12, %esp
 	NEXT_ITER
 
-bc_begin:
-	WORD %ecx
-	WORD %ecx
-	NEXT_ITER
-
-bc_end:
-	ret
-
 bc_sexp:
 	NEXT_ITER
 
@@ -340,7 +332,7 @@ bc_st_a:
 	WORD %ecx
 	POP		%eax
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
-	movl	%eax, 4(%ebp, %ecx, 4)
+	movl	%eax, 8(%ebp, %ecx, 4)
 	NEXT_ITER
 
 bc_cjmpz:
@@ -425,6 +417,36 @@ bc_read:
 	call	Lread
 	PUSH	%eax
 	NEXT_ITER
+
+bc_call:
+	WORD %ecx /* label */
+	WORD %edx /* args number */
+	pusha
+	negl %edx
+	addl	instr_begin, %ecx
+	movl	%ecx, %edi
+	lea	(%esi, %edx, 4), %eax
+for:
+	pushl	4(%eax)
+	addl	$4, %eax
+	cmp %eax, %esi
+	jne for
+	call entry_point
+	popa
+	NEXT_ITER
+
+bc_begin:
+	WORD %ecx /* argument number */
+	WORD %edx /* locals_number */
+	push %ebp
+	movl %esp, %ebp
+	subl %edx, %esp
+	addl %edx, %esi
+	NEXT_ITER
+
+bc_end:
+	leave
+	ret /* Return from lama function */
 
 	.data
 scanline: .asciz "something bad happened"
