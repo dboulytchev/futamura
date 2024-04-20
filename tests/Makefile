@@ -11,7 +11,7 @@ check: $(TESTS)
 
 $(TESTS): %: %.bc
 	@echo $@
-	../byterun/byterun $< > $@.actual && diff $@.actual $@.expected
+	../byterun/byterun $< < $@.input > $@.actual && diff $@.actual $@.expected
 
 clean:
 	$(RM) *.actual *.bc
