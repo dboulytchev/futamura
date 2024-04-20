@@ -31,18 +31,9 @@
 	inc	%edi
 	.endm
 
-	.macro	WORD dst
+	.macro	INT dst
 	movl	(%edi), \dst
 	addl	$4, %edi
-	.endm
-
-	.macro	B lab
-	movl	.+BAR-FOO, %ecx
-	jmp	\lab
-	.endm
-
-	.macro	GB
-	jmp (%ecx)
 	.endm
 
 	.global eval
@@ -55,10 +46,6 @@ instr_begin: .int 0
 stack:	.zero 512
 
 	.text
-FOO:
-	movl $0, %ecx
-	jmp  FOO
-BAR:	nop
 
 # Taking the pointer to the bytecode buffer
 # as an argument
@@ -77,6 +64,7 @@ eval:
 # %esi now plays a role of stack pointer
 	movl	$stack, %esi
 
+entry_point:
 	xorl	%eax, %eax
 	BYTE	%al
 
@@ -216,11 +204,11 @@ binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,
 
 /* some trivial binops */
 
-bc_drop: 
+bc_drop:
 	POP %eax
 	ret
 
-bc_dup:  
+bc_dup:
 	POP 	%eax
 	PUSH	%eax
 	PUSH	%eax
@@ -229,16 +217,16 @@ bc_dup:
 bc_const:
 	FIX_BOX	%ecx
 	PUSH 	%ecx
-	ret 
+	ret
 
 bc_line:
 	nop
-	ret 
-	
+	ret
+
 bc_fail:
 	pushl	$scanline
 	call	failure
-	popl	%eax 
+	popl	%eax
 	ret
 
 bc_ldg:
@@ -246,15 +234,15 @@ bc_ldg:
 	PUSH	%eax
 	ret
 
-bc_ldl: 
+bc_ldl:
 	negl	%ecx
 	movl	-4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_lda: 
+bc_lda:
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
-	movl	4(%ebp, %ecx, 4), %eax 
+	movl	4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
@@ -266,7 +254,7 @@ bc_stg:
 bc_stl:
 	negl	%ecx
 	POP		%eax
-	movl	%eax, -4(%ebp, %ecx, 4) 
+	movl	%eax, -4(%ebp, %ecx, 4)
 	ret
 
 bc_sta:
@@ -274,7 +262,31 @@ bc_sta:
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
 	movl	%eax, 4(%ebp, %ecx, 4)
 	ret
-     	
+
 	.data
-scanline: .asciz "something bad happened"	
+scanline: .asciz "something bad happened"
 global_data: .skip 4 * 1000
+i_cjmpz: POP	%eax
+	FIX_UNB	%eax
+	addl	instr_begin, %ecx
+	testl	%eax, %eax
+	je	not_go1
+	movl	%ecx, %edi
+not_go1:
+	ret
+
+i_cjmpnz: POP	%eax
+	FIX_UNB	%eax
+	addl	instr_begin, %ecx
+	testl	%eax, %eax
+	jne	not_go2
+	movl	%ecx, %edi
+not_go2:
+	ret
+
+i_jmp:
+	addl	instr_begin, %ecx
+	movl	%ecx, %edi
+	ret
+
+
