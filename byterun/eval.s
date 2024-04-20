@@ -67,8 +67,8 @@ eval:
 	BYTE	%al
 
 	movb	%al,%ah
-	andb    0x0F,%al
-	andb    0xF0,%ah
+	andb    $15,%al
+	andb    $240,%ah
 	shrb 	$4,%ah
 
 # Restoring callee's frame pointer
