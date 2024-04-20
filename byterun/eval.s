@@ -43,7 +43,7 @@
 
 	.macro SWITCH flag table
 	movsx   \flag,%ebx
-	movl    \table-0x4(,%ebx,0x4),%ebx
+	movl    \table(,%ebx,0x4),%ebx
 	jmp     *%ebx
 	.endm
 
@@ -99,7 +99,7 @@ high: .int binop,trivial,ld,0,st,cond_jump,0,0
 
 binop:
 	SWITCH %al binops
-binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
+binops:	.int 0,b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
 
 trivial:
 	SWITCH %al trivials
@@ -115,7 +115,7 @@ lds: .int bc_ld_g,bc_ld_l,bc_ld_a
 
 cond_jump:
 	SWITCH %al cond_jumps
-cond_jumps: .int bc_cjmpz,bc_cjmpnz,0,0,0,0,0,0,0,0,0
+cond_jumps: .int bc_cjmpz,bc_cjmpnz,bc_begin,0,0,0,0,0,0,0,0
 
 
 b_add:	POP2 	%eax %ebx
@@ -270,7 +270,12 @@ bc_sta:
 	add		$12, %esp
 	NEXT_ITER
 
+bc_begin:
+	WORD %ecx
+	WORD %ecx
+	NEXT_ITER
 bc_end:
+	TERMINATE
 	NEXT_ITER
 
 bc_elem:
