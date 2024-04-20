@@ -114,7 +114,7 @@ lds: .int bc_ld_g,bc_ld_l,bc_ld_a
 
 cond_jump:
 	SWITCH %al cond_jumps
-cond_jumps: .int bc_cjmpz,bc_cjmpnz,bc_begin,0,0,0,0,0,bc_array,bc_fail,bc_line
+cond_jumps: .int bc_cjmpz,bc_cjmpnz,bc_begin,0,0,0,0,bc_tag,bc_array,bc_fail,bc_line
 
 
 builtin:
@@ -310,6 +310,24 @@ sexp_pop_loop_begin:
 	jnz		sexp_pop_loop_begin
 sexp_pop_loop_end:
 	PUSH	%eax
+	NEXT_ITER
+
+bc_tag:
+    WORD	%eax
+	addl	sexp_string_buffer, %eax
+	pushl   %eax
+	call	LtagHash
+	FIX_BOX	%eax
+	add		$4, %esp
+	WORD 	%ecx
+	FIX_BOX	%ecx
+	POP 	%edx
+	push	%ecx
+	push	%eax	
+	push 	%edx
+	call 	Btag
+	PUSH	%eax
+	add		$12, %esp
 	NEXT_ITER
 
 bc_const:
