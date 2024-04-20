@@ -337,6 +337,22 @@ pop_loop_begin:
 	decl	%edx
 	jnz		pop_loop_begin
 pop_loop_end:
+	PUSH	%eax
+	ret
+
+bc_elem:
+# store arguments {
+	POP		%ebx
+	pushl	%ebx
+	POP		%ebx
+	pushl	%ebx
+# }
+	call	Belem
+# pop arguments {
+	popl	%ebx
+	popl	%ebx
+# }
+	PUSH 	%eax
 	ret
 
 	.data
