@@ -318,16 +318,16 @@ bc_tag:
 	pushl   %eax
 	call	LtagHash
 	FIX_BOX	%eax
-	add		$4, %esp
+	addl	$4, %esp
 	WORD 	%ecx
 	FIX_BOX	%ecx
 	POP 	%edx
-	push	%ecx
-	push	%eax	
-	push 	%edx
+	pushl	%ecx
+	pushl	%eax	
+	pushl 	%edx
 	call 	Btag
 	PUSH	%eax
-	add		$12, %esp
+	addl	$12, %esp
 	NEXT_ITER
 
 bc_const:
