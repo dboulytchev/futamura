@@ -241,27 +241,35 @@ bc_fail:
 	ret
 
 bc_stg:
-	PUSH global_data(, %ecx, 4)
+	movl global_data(, %ecx, 4), %eax
+	PUSH %eax
 	ret
 
 bc_stl: 
-	PUSH -4(%ebp, %ecx, -4) 
+    negl %ecx
+	movl -4(%ebp, %ecx, 4), %eax
+	PUSH %eax
 	ret
 
 bc_sta: 
-	PUSH 8(%ebp, %ecx, 4) 
+	movl 8(%ebp, %ecx, 4), %eax 
+	PUSH %eax
 	ret
 
 bc_ldg:
-	POP global_data(, %ecx, 4)
+    POP %eax
+	movl %eax, global_data(, %ecx, 4)
 	ret
 
 bc_ldl: 
-	POP -4(%ebp, %ecx, -4) 
+    negl %ecx
+    POP %eax
+	movl %eax, -4(%ebp, %ecx) 
 	ret
 
 bc_lda: 
-	POP 8(%ebp, %ecx, 4) 
+    POP %eax
+	movl %eax, 8(%ebp, %ecx, 4)
 	ret
      	
 	.data
