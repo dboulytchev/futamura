@@ -63,6 +63,7 @@ eval:
 # %esi now plays a role of stack pointer	
 	movl	$stack, %esi
 
+entry:
 	xorl	%eax, %eax	
 	BYTE	%al
 
@@ -70,6 +71,10 @@ eval:
 	andb    $15,%al
 	andb    $240,%ah
 	shrb 	$4,%ah
+	movsx   %ah,%ebx
+	movl    high(,%ebx,0x4),%ebx
+	jmp     *%ebx
+
 
 # Restoring callee's frame pointer
 	popl	%ebp
@@ -77,9 +82,20 @@ eval:
 # Returning	
 	ret
 
+binop:
+    movsx   %al,%ebx
+    movl    binops(,%ebx,0x4),%ebx
+    jmp     *%ebx
+
+const:  nop
+
+high: .int binop,const
+
+
 b_add:	POP2 	%eax %ebx
 	addl	%ebx, %eax
 	PUSH	%eax
+    jmp     entry
 
 b_sub:	POP2	%eax %ebx
 	subl	%eax, %ebx
