@@ -195,4 +195,4 @@ b_or:	POP2	%eax %ebx
 	FIX_BOX %ebx
 	PUSH	%ebx
 
-binops:	.int b_add,b_sub,b_mul,b_div,b_mod
+binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
