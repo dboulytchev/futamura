@@ -36,6 +36,7 @@ fun print (l) {
 }
 
 var l = generate (100);
+var meow = Meeeeeooooow (200, 200);
 
 print (l);
 print (bubbleSort (l))

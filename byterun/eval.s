@@ -286,6 +286,41 @@ bc_end:
 	ret
 
 bc_sexp:
+
+    /* move hash to eax*/
+    WORD	%eax
+	addl	sexp_string_buffer, %eax	
+	pushl   %eax
+	call	LtagHash
+	FIX_BOX	%eax
+	add		$4, %esp
+	
+	/* push hash and args*/
+
+	WORD 	%ecx
+	movl	%ecx, %edx
+	push	%eax
+sexp_push_loop_begin:
+	POP		%ebx
+	pushl	%ebx
+	decl	%edx
+	jnz		sexp_push_loop_begin
+sexp_push_loop_end:
+    /* push (n + 1) */
+	incl	%ecx
+	FIX_BOX	%ecx
+	pushl 	%ecx
+	call	Bsexp
+	/* get back number of args and pop them */
+	popl	%ecx
+	FIX_UNB	%ecx
+	movl	%ecx, %edx
+sexp_pop_loop_begin:
+	popl	%ebx
+	decl	%edx
+	jnz		sexp_pop_loop_begin
+sexp_pop_loop_end:
+	PUSH	%eax
 	NEXT_ITER
 
 bc_const:
@@ -375,13 +410,13 @@ bc_array:
 	WORD 	%ecx
 	movl	%ecx, %edx
 	test	%edx, %edx
-	jz 		push_loop_end
-push_loop_begin:
+	jz 		array_push_loop_end
+array_push_loop_begin:
 	POP		%ebx
 	pushl	%ebx
 	decl	%edx
-	jnz		push_loop_begin
-push_loop_end:
+	jnz		array_push_loop_begin
+array_push_loop_end:
 	FIX_BOX	%ecx
 	pushl 	%ecx
 	call	Barray
@@ -389,12 +424,12 @@ push_loop_end:
 	FIX_UNB	%ecx
 	movl	%ecx, %edx
 	test	%edx, %edx
-	jz 		pop_loop_end
-pop_loop_begin:
+	jz 		array_pop_loop_end
+array_pop_loop_begin:
 	popl	%ebx
 	decl	%edx
-	jnz		pop_loop_begin
-pop_loop_end:
+	jnz		array_pop_loop_begin
+array_pop_loop_end:
 	PUSH	%eax
 	NEXT_ITER
 
@@ -426,6 +461,8 @@ bc_read:
 	PUSH	%eax
 	NEXT_ITER
 
+	.global sexp_string_buffer
 	.data
 scanline: .asciz "something bad happened"
 global_data: .skip 4 * 1000
+sexp_string_buffer: .int
