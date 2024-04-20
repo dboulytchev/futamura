@@ -97,7 +97,7 @@ entry_point:
 	movl    high(,%ebx,0x4),%ebx
 	jmp    *%ebx
 
-high: .int binop,trivial,ld,0,st,cond_jump,0,0
+high: .int binop,trivial,ld,0,st,cond_jump,0,builtin
 
 binop:
 	SWITCH %al binops
@@ -117,8 +117,12 @@ lds: .int bc_ld_g,bc_ld_l,bc_ld_a
 
 cond_jump:
 	SWITCH %al cond_jumps
-cond_jumps: .int bc_cjmpz,bc_cjmpnz,bc_begin,0,0,0,0,0,0,0,0
+cond_jumps: .int bc_cjmpz,bc_cjmpnz,bc_begin,0,0,0,0,0,bc_array,bc_fail,bc_line
 
+
+builtin:
+	SWITCH %al builtins
+builtins: .int bc_read,bc_write,0,0,0
 
 b_add:	POP2 	%eax %ebx
 	FIX_UNB %eax
@@ -281,9 +285,6 @@ bc_begin:
 bc_end:
 	ret
 
-bc_elem:
-	NEXT_ITER
-
 bc_sexp:
 	NEXT_ITER
 
@@ -294,7 +295,21 @@ bc_const:
 	NEXT_ITER
 
 bc_line:
-	nop
+	WORD %ecx
+	NEXT_ITER
+
+bc_end:
+	ret
+
+bc_sexp:
+	NEXT_ITER
+
+bc_const:
+	WORD %ecx
+	FIX_BOX	%ecx
+	PUSH 	%ecx
+	NEXT_ITER
+
 	NEXT_ITER
 
 bc_fail:
@@ -395,7 +410,7 @@ pop_loop_begin:
 	jnz		pop_loop_begin
 pop_loop_end:
 	PUSH	%eax
-	ret
+	NEXT_ITER
 
 bc_elem:
 # store arguments {
@@ -410,7 +425,7 @@ bc_elem:
 	popl	%ebx
 # }
 	PUSH 	%eax
-	ret
+	NEXT_ITER
 
 bc_write:
 	POP		%ebx
@@ -418,12 +433,12 @@ bc_write:
 	call	Lwrite
 	popl	%ebx
 	PUSH	%eax
-	ret
+	NEXT_ITER
 
 bc_read:
 	call	Lread
 	PUSH	%eax
-	ret
+	NEXT_ITER
 
 	.data
 scanline: .asciz "something bad happened"
