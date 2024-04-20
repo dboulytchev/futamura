@@ -266,12 +266,12 @@ bc_sta:
 	POP 	%eax
 	POP 	%ecx
 	POP 	%edx
-	push 	%edx
-	push 	%ecx
-	push 	%eax
+	pushl 	%edx
+	pushl 	%ecx
+	pushl 	%eax
 	call 	Bsta
 	PUSH	%eax
-	add		$12, %esp
+	addl	$12, %esp
 	NEXT_ITER
 
 bc_sexp:
@@ -282,13 +282,13 @@ bc_sexp:
 	pushl   %eax
 	call	LtagHash
 	FIX_BOX	%eax
-	add		$4, %esp
+	addl	$4, %esp
 
 	/* push hash and args*/
 
 	WORD 	%ecx
 	movl	%ecx, %edx
-	push	%eax
+	pushl	%eax
 sexp_push_loop_begin:
 	POP		%ebx
 	pushl	%ebx
@@ -488,7 +488,7 @@ for:
 bc_begin:
 	WORD %ecx /* argument number */
 	WORD %edx /* locals_number */
-	push %ebp
+	pushl %ebp
 	movl %esp, %ebp
 	subl %edx, %esp
 	addl %edx, %esi
