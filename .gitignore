@@ -1,5 +1,13 @@
+# Magic to ignore files without extension
+*
+!*/
+!*.*
+
 # VSCode history files
 **/.history/*
+
+# Lama bytecode files
+*.bc
 
 # Prerequisites
 *.d
