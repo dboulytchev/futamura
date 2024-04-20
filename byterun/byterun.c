@@ -6,6 +6,8 @@
 # include <malloc.h>
 # include "../runtime/runtime.h"
 
+extern char* sexp_string_buffer;
+
 void *__start_custom_data;
 void *__stop_custom_data;
 
@@ -298,7 +300,8 @@ extern void eval (void*);
 
 int main (int argc, char* argv[]) {
   bytefile *f = read_file (argv[1]);
-  // dump_file (stdout, f);
+  dump_file (stderr, f);
+  sexp_string_buffer = f->string_ptr;
   eval (f->code_ptr);
   return 0;
 }
