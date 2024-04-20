@@ -251,6 +251,23 @@ bc_dup:
 	NEXT_ITER
 
 bc_sti:
+	WORD %ecx
+	POP	%eax
+	POP	%ecx
+	movl %eax, (%ecx)
+	NEXT_ITER
+
+bc_sta:
+	WORD %ecx
+	POP 	%eax
+	POP 	%ecx
+	POP 	%edx
+	push 	%edx
+	push 	%ecx
+	push 	%eax
+	call 	Bsta
+	PUSH	%eax
+	add		$12, %esp
 	NEXT_ITER
 
 bc_end:
