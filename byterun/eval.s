@@ -11,6 +11,7 @@
 	xorl 	$1, \dst
 	.endm
 
+# fixnum arithmetics: unbox integer
 	.macro FIX_UNB dst
 	xorl 	$1, \dst
 	sarl 	$1, \dst
@@ -368,6 +369,61 @@ bc_jmp:
 	addl	instr_begin, %ecx
 	movl	%ecx, %edi
 	NEXT_ITER
+
+bc_array:
+	WORD 	%ecx
+	movl	%ecx, %edx
+	test	%edx, %edx
+	jz 		push_loop_end
+push_loop_begin:
+	POP		%ebx
+	pushl	%ebx
+	decl	%edx
+	jnz		push_loop_begin
+push_loop_end:
+	FIX_BOX	%ecx
+	pushl 	%ecx
+	call	Barray
+	popl	%ecx
+	FIX_UNB	%ecx
+	movl	%ecx, %edx
+	test	%edx, %edx
+	jz 		pop_loop_end
+pop_loop_begin:
+	popl	%ebx
+	decl	%edx
+	jnz		pop_loop_begin
+pop_loop_end:
+	PUSH	%eax
+	ret
+
+bc_elem:
+# store arguments {
+	POP		%ebx
+	pushl	%ebx
+	POP		%ebx
+	pushl	%ebx
+# }
+	call	Belem
+# pop arguments {
+	popl	%ebx
+	popl	%ebx
+# }
+	PUSH 	%eax
+	ret
+
+bc_write:
+	POP		%ebx
+	pushl	%ebx
+	call	Lwrite
+	popl	%ebx
+	PUSH	%eax
+	ret
+
+bc_read:
+	call	Lread
+	PUSH	%eax
+	ret
 
 	.data
 scanline: .asciz "something bad happened"
