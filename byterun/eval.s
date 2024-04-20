@@ -222,7 +222,7 @@ bc_drop:
 
 bc_dup:  
 	POP 	%eax
-    PUSH	%eax
+	PUSH	%eax
 	PUSH	%eax
 	ret
 
