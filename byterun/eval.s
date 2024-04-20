@@ -3,9 +3,6 @@
 	.macro NEXT_ITER
 	jmp entry_point
 	.endm
-	.macro TERMINATE
-	jmp terminate
-	.endm
 	.macro FIX_BOX dst
 	sall 	$1, \dst
 	xorl 	$1, \dst
@@ -277,24 +274,16 @@ bc_sta:
 	add		$12, %esp
 	NEXT_ITER
 
-bc_begin:
-	WORD %ecx
-	WORD %ecx
-	NEXT_ITER
-
-bc_end:
-	ret
-
 bc_sexp:
 
     /* move hash to eax*/
     WORD	%eax
-	addl	sexp_string_buffer, %eax	
+	addl	sexp_string_buffer, %eax
 	pushl   %eax
 	call	LtagHash
 	FIX_BOX	%eax
 	add		$4, %esp
-	
+
 	/* push hash and args*/
 
 	WORD 	%ecx
@@ -375,7 +364,7 @@ bc_st_a:
 	WORD %ecx
 	POP		%eax
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
-	movl	%eax, 4(%ebp, %ecx, 4)
+	movl	%eax, 8(%ebp, %ecx, 4)
 	NEXT_ITER
 
 bc_cjmpz:
@@ -461,8 +450,38 @@ bc_read:
 	PUSH	%eax
 	NEXT_ITER
 
-	.global sexp_string_buffer
+bc_call:
+	WORD %ecx /* label */
+	WORD %edx /* args number */
+	pusha
+	negl %edx
+	addl	instr_begin, %ecx
+	movl	%ecx, %edi
+	lea	(%esi, %edx, 4), %eax
+for:
+	pushl	4(%eax)
+	addl	$4, %eax
+	cmp %eax, %esi
+	jne for
+	call entry_point
+	popa
+	NEXT_ITER
+
+bc_begin:
+	WORD %ecx /* argument number */
+	WORD %edx /* locals_number */
+	push %ebp
+	movl %esp, %ebp
+	subl %edx, %esp
+	addl %edx, %esi
+	NEXT_ITER
+
+bc_end:
+	leave
+	ret /* Return from lama function */
+
 	.data
+	.global sexp_string_buffer
 scanline: .asciz "something bad happened"
 global_data: .skip 4 * 1000
 sexp_string_buffer: .int

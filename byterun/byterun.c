@@ -300,7 +300,7 @@ extern void eval (void*);
 
 int main (int argc, char* argv[]) {
   bytefile *f = read_file (argv[1]);
-  dump_file (stdout, f);
+  dump_file (stderr, f);
   sexp_string_buffer = f->string_ptr;
   eval (f->code_ptr);
   return 0;

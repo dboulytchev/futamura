@@ -1,0 +1,17 @@
+TESTS=$(sort $(basename $(wildcard *.lama)))
+
+LAMAC=lamac
+
+%.bc: %.lama
+	$(LAMAC) -b $<
+
+.PHONY: check $(TESTS)
+
+check: $(TESTS)
+
+$(TESTS): %: %.bc
+	@echo $@
+	../byterun/byterun $< > $@.actual && diff $@.actual $@.expected
+
+clean:
+	$(RM) *.actual *.expected
