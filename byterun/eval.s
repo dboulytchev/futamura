@@ -1,7 +1,7 @@
 # Various macro definitions
 	.macro	POP dst
-	movl	(%esi), \dst
 	subl	$4, %esi
+	movl	(%esi), \dst
 	.endm
 
 	.macro	POP2 dst1 dst2
@@ -10,20 +10,29 @@
 	.endm
 	
 	.macro	PUSH dst
-	addl	$4, %esi
 	movl	\dst, (%esi)
+	addl	$4, %esi
 	.endm
 
 	.macro	BYTE dst
-	movb	(%ebp), \dst
-	inc	%ebp
+	movb	(%edi), \dst
+	inc	%edi
 	.endm
 
 	.macro	WORD dst
-	movl	(%ebp), \dst
-	addl	$4, %ebp
+	movl	(%edi), \dst
+	addl	$4, %edi
 	.endm
 
+	.macro	B lab
+	movl	.+BAR-FOO, %ecx
+	jmp	\lab
+	.endm
+
+	.macro	GB
+	jmp (%ecx)
+	.endm
+	
 	.global eval
 	.data
 # Format string for debugging	
@@ -31,8 +40,13 @@ fmt:	.string "%x\n"
 
 # Stack space
 stack:	.zero 512
-	
+
 	.text
+FOO:	
+	movl $0, %ecx
+	jmp  FOO
+BAR:	nop
+	
 # Taking the pointer to the bytecode buffer
 # as an argument
 	
@@ -40,32 +54,22 @@ eval:
 # Saving callee's frame pointer
 	pushl	%ebp
 
-# Moving bytecode pointer to %ebp
+# Moving bytecode pointer to %edi
 # %epb now plays a role of instruction
 # pointer	
-	movl	8(%esp), %ebp
+	movl	8(%esp), %edi
 
 # Moving stack address to %esi
 # %esi now plays a role of stack pointer	
 	movl	$stack, %esi
 
-	xorl	%eax, %eax
-	
+	xorl	%eax, %eax	
 	BYTE	%al
 
-	pushl 	%eax
-	pushl	$fmt
-	call	printf
-	addl	$8, %esp
-
-	xorl	%eax, %eax
-	
-	BYTE	%al
-
-	pushl 	%eax
-	pushl	$fmt
-	call	printf
-	addl	$8, %esp
+	movb	%al,%ah
+	andb    0x0F,%al
+	andb    0xF0,%ah
+	slr	4,%ah
 
 # Restoring callee's frame pointer
 	popl	%ebp
@@ -95,4 +99,4 @@ b_mod:	POP2	%ebx %eax
 	idiv	%ebx
 	PUSH	%edx
 	
-w:	.word b_abb, b_sub, b_mul, b_mod
+binops:	.int b_add,b_sub,b_mul,b_mod

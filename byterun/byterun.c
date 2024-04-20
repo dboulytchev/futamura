@@ -299,8 +299,6 @@ extern void eval (void*);
 int main (int argc, char* argv[]) {
   bytefile *f = read_file (argv[1]);
   dump_file (stdout, f);
-  printf ("%x\n", *f->code_ptr);
-  printf ("%x\n", *(f->code_ptr+1));
   eval (f->code_ptr);
   return 0;
 }
