@@ -9,12 +9,12 @@ esp_fmt:	.string "esp: 0x%x\n"
 ebp_fmt:	.string "ebp: 0x%x\n"
 
 	.macro PRINT_REG fmt reg
-	pusha
-	pushl \reg
-	pushl $\fmt
-	call Lprintf_unsafe
-	addl $8, %esp
-	popa
+#	pusha
+#	pushl \reg
+#	pushl $\fmt
+#	call Lprintf_unsafe
+#	addl $8, %esp
+#	popa
 	.endm
 
 	.macro NEXT_ITER
@@ -504,6 +504,7 @@ bc_begin:
 	WORD %edx /* locals_number */
 	pushl %ebp
 	movl %esp, %ebp
+	lea (,%edx,4), %edx
 	subl %edx, %esp
 	addl %edx, %esi
 	NEXT_ITER
