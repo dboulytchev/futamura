@@ -240,6 +240,21 @@ bc_dup:
 	ret
 
 bc_sti:
+	POP	%eax
+	POP	%ecx
+	movl %eax, (%ecx)
+	ret
+
+bc_sta: 
+	POP 	%eax
+	POP 	%ecx
+	POP 	%edx
+	push 	%edx 
+	push 	%ecx
+	push 	%eax
+	call 	Bsta
+	PUSH	%eax
+	add		$12, %esp
 	ret
 
 bc_jmp:
@@ -273,40 +288,40 @@ bc_fail:
 	popl	%eax
 	ret
 
-bc_ldg:
+bc_ld_g:
 	WORD %ecx
 	movl	global_data(, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_ldl:
+bc_ld_l:
 	WORD %ecx
 	negl	%ecx
 	movl	-4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_lda:
+bc_ld_a:
 	WORD %ecx
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
 	movl	4(%ebp, %ecx, 4), %eax
 	PUSH	%eax
 	ret
 
-bc_stg:
+bc_st_g:
 	WORD %ecx
 	POP		%eax
 	movl	%eax, global_data(, %ecx, 4)
 	ret
 
-bc_stl:
+bc_st_l:
 	WORD %ecx
 	negl	%ecx
 	POP		%eax
 	movl	%eax, -4(%ebp, %ecx, 4)
 	ret
 
-bc_sta:
+bc_st_a:
 	WORD %ecx
 	POP		%eax
 	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
