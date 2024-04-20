@@ -1,6 +1,6 @@
 FLAGS=-m32 -g2 -fstack-protector-all
 
-all: byterun.o eval.o
+all: byterun.o eval.o ../runtime/runtime.a
 	$(CC) $(FLAGS) -no-pie -o byterun byterun.o eval.o ../runtime/runtime.a
 
 byterun.o: byterun.c
