@@ -313,6 +313,32 @@ bc_sta:
 	movl	%eax, 4(%ebp, %ecx, 4)
 	ret
 
+bc_array:
+	WORD 	%ecx
+	movl	%ecx, %edx
+	test	%edx, %edx
+	jz 		push_loop_end
+push_loop_begin:
+	POP		%ebx
+	pushl	%ebx
+	decl	%edx
+	jnz		push_loop_begin
+push_loop_end:
+	FIX_BOX	%ecx
+	pushl 	%ecx
+	call	Barray
+	popl	%ecx
+	FIX_UNB	%ecx
+	movl	%ecx, %edx
+	test	%edx, %edx
+	jz 		pop_loop_end
+pop_loop_begin:
+	popl	%ebx
+	decl	%edx
+	jnz		pop_loop_begin
+pop_loop_end:
+	ret
+
 	.data
 scanline: .asciz "something bad happened"
 global_data: .skip 4 * 1000
