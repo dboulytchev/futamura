@@ -14,4 +14,4 @@ $(TESTS): %: %.bc
 	../byterun/byterun $< > $@.actual && diff $@.actual $@.expected
 
 clean:
-	$(RM) *.actual *.expected
+	$(RM) *.actual *.bc
