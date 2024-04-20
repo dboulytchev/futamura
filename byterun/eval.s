@@ -8,7 +8,7 @@
 	POP	\dst1
 	POP	\dst2
 	.endm
-	
+
 	.macro	PUSH dst
 	movl	\dst, (%esi)
 	addl	$4, %esi
@@ -32,38 +32,40 @@
 	.macro	GB
 	jmp (%ecx)
 	.endm
-	
+
 	.global eval
 	.data
-# Format string for debugging	
+# Format string for debugging
 fmt:	.string "%x\n"
+instr_begin: .int 0
 
 # Stack space
 stack:	.zero 512
 
 	.text
-FOO:	
+FOO:
 	movl $0, %ecx
 	jmp  FOO
 BAR:	nop
-	
+
 # Taking the pointer to the bytecode buffer
 # as an argument
-	
+
 eval:
 # Saving callee's frame pointer
 	pushl	%ebp
 
 # Moving bytecode pointer to %edi
 # %epb now plays a role of instruction
-# pointer	
+# pointer
 	movl	8(%esp), %edi
+	movl 	%edi, instr_begin
 
 # Moving stack address to %esi
-# %esi now plays a role of stack pointer	
+# %esi now plays a role of stack pointer
 	movl	$stack, %esi
 
-	xorl	%eax, %eax	
+	xorl	%eax, %eax
 	BYTE	%al
 
 	movb	%al,%ah
@@ -71,10 +73,12 @@ eval:
 	andb    $240,%ah
 	shrb 	$4,%ah
 
+
+
 # Restoring callee's frame pointer
 	popl	%ebp
 
-# Returning	
+# Returning
 	ret
 
 b_add:	POP2 	%eax %ebx
@@ -98,5 +102,5 @@ b_mod:	POP2	%ebx %eax
 	cltd
 	idiv	%ebx
 	PUSH	%edx
-	
+
 binops:	.int b_add,b_sub,b_mul,b_mod
