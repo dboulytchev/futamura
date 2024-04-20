@@ -95,6 +95,7 @@ b_add:	POP2 	%eax %ebx
 	addl	%ebx, %eax
 	FIX_BOX %eax
 	PUSH	%eax
+	ret
 
 b_sub:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -102,6 +103,7 @@ b_sub:	POP2	%eax %ebx
 	subl	%eax, %ebx
 	FIX_BOX %ebx
 	PUSH	%ebx
+	ret
 
 b_mul:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -109,6 +111,7 @@ b_mul:	POP2	%eax %ebx
 	imul	%ebx
 	FIX_BOX %eax
 	PUSH	%eax
+	ret
 
 b_div:	POP2	%ebx %eax
 	FIX_UNB %eax
@@ -117,6 +120,7 @@ b_div:	POP2	%ebx %eax
 	idiv	%ebx
 	FIX_BOX %eax
 	PUSH	%eax
+	ret
 
 b_mod:	POP2	%ebx %eax
 	FIX_UNB %eax
@@ -125,6 +129,7 @@ b_mod:	POP2	%ebx %eax
 	idiv	%ebx
 	FIX_BOX %edx
 	PUSH	%edx
+	ret
 
 b_eq: 	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -135,6 +140,7 @@ b_eq: 	POP2	%eax %ebx
 	seteb	%dl
 	FIX_BOX %edx
 	PUSH 	%edx
+	ret
 
 b_neq: 	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -144,6 +150,7 @@ b_neq: 	POP2	%eax %ebx
 	setneb	%dl
 	FIX_BOX %edx
 	PUSH 	%edx
+	ret
 
 b_lt: 	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -153,6 +160,7 @@ b_lt: 	POP2	%eax %ebx
 	setlb	%dl
 	FIX_BOX %edx
 	PUSH	%edx
+	ret
 
 b_le:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -162,6 +170,7 @@ b_le:	POP2	%eax %ebx
 	setleb	%dl
 	FIX_BOX %edx
 	PUSH	%edx
+	ret
 
 b_gt: 	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -171,6 +180,7 @@ b_gt: 	POP2	%eax %ebx
 	setgb	%dl
 	FIX_BOX %edx
 	PUSH	%edx
+	ret
 
 b_ge:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -180,6 +190,7 @@ b_ge:	POP2	%eax %ebx
 	setgeb	%dl
 	FIX_BOX %edx
 	PUSH	%edx
+	ret
 
 b_and:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -187,6 +198,7 @@ b_and:	POP2	%eax %ebx
 	andl	%eax, %ebx
 	FIX_BOX %ebx
 	PUSH	%ebx
+	ret
 
 b_or:	POP2	%eax %ebx
 	FIX_UNB %eax
@@ -194,5 +206,6 @@ b_or:	POP2	%eax %ebx
 	orl		%eax, %ebx
 	FIX_BOX %ebx
 	PUSH	%ebx
+	ret
 
 binops:	.int b_add,b_sub,b_mul,b_div,b_mod,b_eq,b_neq,b_lt,b_le,b_gt,b_ge,b_and,b_or
