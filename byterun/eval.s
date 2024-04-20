@@ -138,15 +138,15 @@ bc_sta:
 	ret
 
 bc_ldg:
-	PUSH global_data(, %ecx, 4)
+	POP global_data(, %ecx, 4)
 	ret
 
 bc_ldl: 
-    PUSH -4(%ebp, %ecx, -4) 
+    POP -4(%ebp, %ecx, -4) 
 	ret
 
 bc_lda: 
-    PUSH 8(%ebp, %ecx, 4) 
+    POP 8(%ebp, %ecx, 4) 
 	ret
      	
 binops:	.int b_add,b_sub,b_mul,b_mod
