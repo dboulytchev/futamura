@@ -227,7 +227,8 @@ bc_dup:
 	ret
 
 bc_const:
-	PUSH %ecx
+	FIX_BOX	%ecx
+	PUSH 	%ecx
 	ret 
 
 bc_line:
@@ -235,41 +236,43 @@ bc_line:
 	ret 
 	
 bc_fail:
-	pushl $scanline
-	call failure
-	popl %eax 
-	ret
-
-bc_stg:
-	movl global_data(, %ecx, 4), %eax
-	PUSH %eax
-	ret
-
-bc_stl: 
-    negl %ecx
-	movl -4(%ebp, %ecx, 4), %eax
-	PUSH %eax
-	ret
-
-bc_sta: 
-	movl 8(%ebp, %ecx, 4), %eax 
-	PUSH %eax
+	pushl	$scanline
+	call	failure
+	popl	%eax 
 	ret
 
 bc_ldg:
-    POP %eax
-	movl %eax, global_data(, %ecx, 4)
+	movl	global_data(, %ecx, 4), %eax
+	PUSH	%eax
 	ret
 
 bc_ldl: 
-    negl %ecx
-    POP %eax
-	movl %eax, -4(%ebp, %ecx) 
+	negl	%ecx
+	movl	-4(%ebp, %ecx, 4), %eax
+	PUSH	%eax
 	ret
 
 bc_lda: 
-    POP %eax
-	movl %eax, 8(%ebp, %ecx, 4)
+	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
+	movl	4(%ebp, %ecx, 4), %eax 
+	PUSH	%eax
+	ret
+
+bc_stg:
+	POP		%eax
+	movl	%eax, global_data(, %ecx, 4)
+	ret
+
+bc_stl:
+	negl	%ecx
+	POP		%eax
+	movl	%eax, -4(%ebp, %ecx, 4) 
+	ret
+
+bc_sta:
+	POP		%eax
+	/*  Maybe it should be 8, not 4 (resolve on merging vs Call)  */
+	movl	%eax, 4(%ebp, %ecx, 4)
 	ret
      	
 	.data
